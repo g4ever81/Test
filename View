@@ -1,0 +1,18 @@
+if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
+            buyPointsViewController = [[BuyPointsViewController alloc] initWithNibName:@"BuyPointsViewController_iPhone" bundle:nil];
+        }else{
+            buyPointsViewController = [[BuyPointsViewController alloc] initWithNibName:@"BuyPointsViewController_iPad" bundle:nil];
+        }
+        [self.navigationController pushViewController:buyPointsViewController animated:YES];
+
+
+-(void)SettingView{
+    //[self viewDidLoad];
+    SettingsViewController *settingsViewController = [[SettingsViewController alloc] initWithNibName:@"SettingsViewController_iPhone" bundle:nil];
+    UINavigationController *n = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+    if (PPSystemVersionGreaterOrEqualThan(5.0)){
+        [self presentViewController:n animated:YES completion:nil];
+    }else{
+        [self presentViewController:n animated:YES completion:nil];
+    }
+}
