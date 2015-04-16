@@ -1,0 +1,138 @@
+#pragma mark - Table view methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if(section == 0){
+        return [infoScreenArray count];
+    }
+    else if(section == 1){
+        return [ProServicesArray count];
+    }
+    return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    CGFloat Row = 0;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
+        Row = 50;
+    }else{
+        Row = 60;
+    }
+    return Row;
+}
+
+/*- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    if(section == 0)
+        return NSLocalizedStringFromTableInBundle(@"Info", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    else
+        return NSLocalizedStringFromTableInBundle(@"Pro Services", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+}*/
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 50;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView *headerView = [[UIView alloc] init];
+    UILabel *OtherHeaderTitle = [[UILabel alloc] init];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
+        headerView.frame = CGRectMake(0, 0, 320, 50);
+        OtherHeaderTitle.frame = CGRectMake(10, 10, 300, 30);
+        OtherHeaderTitle.font = [UIFont systemFontOfSize:14.0f];
+    }else{
+        headerView.frame = CGRectMake(0, 0, 768, 50);
+        OtherHeaderTitle.frame = CGRectMake(10, 10, 748, 30);
+        OtherHeaderTitle.font = [UIFont systemFontOfSize:20.0f];
+    }
+    headerView.backgroundColor = [UIColor clearColor];
+    
+    NSString *titleHeader;
+    switch (section){
+        case 0:
+            titleHeader = NSLocalizedStringFromTableInBundle(@"Info", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+            break;
+        case 1:
+            titleHeader = NSLocalizedStringFromTableInBundle(@"Pro Services", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+            break;
+        default:
+            break;
+    }
+    
+    OtherHeaderTitle.text = titleHeader;
+    [OtherHeaderTitle setTextColor:[UIColor blackColor]];
+    OtherHeaderTitle.textAlignment = NSTextAlignmentLeft;
+    [headerView addSubview:OtherHeaderTitle];
+    return headerView;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    static NSString *myIdentifire = @"INFO_CELL";
+    InfoViewCellCustom *infoViewCellCustom = (InfoViewCellCustom *)[tableView dequeueReusableCellWithIdentifier:myIdentifire];
+    
+    if (infoViewCellCustom == nil){
+        NSArray *nib;
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
+            nib = [[NSBundle mainBundle] loadNibNamed:@"InfoViewCellCustom_iPhone" owner:self options:nil];
+        }else{
+            nib = [[NSBundle mainBundle] loadNibNamed:@"InfoViewCellCustom_iPad" owner:self options:nil];
+        }
+        infoViewCellCustom = (InfoViewCellCustom *)[nib objectAtIndex:0];
+    }
+    
+    infoViewCellCustom.backgroundColor = [UIColor clearColor];
+    infoViewCellCustom.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    infoViewCellCustom.categoryLabel.numberOfLines = 0;
+    
+    if(indexPath.section == 0){
+        infoViewCellCustom.categoryLabel.text = NSLocalizedStringFromTableInBundle([infoScreenArray objectAtIndex:indexPath.row], @"Localizable", [AppDelegate GetLocalizebundle], @"");
+        infoViewCellCustom.categoryImageView.image = [UIImage imageNamed:[infoScreenImagesArray objectAtIndex:indexPath.row]];
+    }
+    else if (indexPath.section == 1){
+        infoViewCellCustom.backgroundColor = [UIColor clearColor];
+        infoViewCellCustom.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        infoViewCellCustom.selectionStyle = UITableViewCellSelectionStyleDefault;
+        
+        infoViewCellCustom.categoryLabel.text = [NSString stringWithFormat:@"%@",NSLocalizedStringFromTableInBundle([ProServicesArray objectAtIndex:indexPath.row], @"Localizable",[AppDelegate GetLocalizebundle], @"")];
+        infoViewCellCustom.categoryImageView.image = [UIImage imageNamed:[ProServicesArrayImages objectAtIndex:indexPath.row]];
+    }
+    return infoViewCellCustom;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if(indexPath.section == 0){
+        if(indexPath.row == 0){
+            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:appWebsiteURL]];
+        }
+        else if(indexPath.row == 1){
+            intCheckView = 1;
+            [self open_Mail];
+        }
+        else if(indexPath.row == 2){
+            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:iTunesURL]];
+        }
+        else if(indexPath.row == 3){
+            intCheckView = 2;
+            [self open_Mail];
+        }
+        else if (indexPath.row == 4){
+            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:moreAppsLinkArray]];
+        }
+    }
+    else if(indexPath.section == 1){
+        appDelegate.purchaseInt = 0;
+        if (indexPath.row == 0)//remove ads
+        {
+            [self Purchase_InAppItem:inAppPurchaseID];
+        }
+        else if (indexPath.row == 1)
+        {
+            [self Purchase_InAppItem:inAppPurchaseID];
+        }
+    }
+}
