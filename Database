@@ -1,0 +1,382 @@
+#import "DatabaseManager.h"
+
+@implementation DatabaseManager
+
+#pragma mark - General Query Code:-
+-(NSString *)filePath{
+    NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *directory = [path objectAtIndex:0];
+    return [directory stringByAppendingPathComponent:@"InvoiceApp.sqlite"];
+}
+
+-(void)openDB{
+    if (sqlite3_open([[self filePath] UTF8String], &db) != SQLITE_OK) {
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Database couldn't open" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
+#pragma mark - Insert Query Code:-
+//==================== Insert Query Code ======================//
+
+-(BOOL)insertValueIntoTable:(NSString*)query err:(NSString*)error{
+    [self openDB];
+    char *err;
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_exec(db, [query UTF8String], NULL, NULL, &err) != SQLITE_OK){
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:error delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    return YES;
+}
+
+#pragma mark - Select Query Code:-
+//==================== Select Query Code ======================//
+-(NSMutableArray*) getAllDataUsingQuery:(NSString*)query
+{
+    [self openDB];
+    
+    //NSMutableArray *resultsArray = [[NSMutableArray alloc] initWithCapacity:1];
+    NSMutableArray *resultsArray = [NSMutableArray array];
+    sqlite3_stmt *statement1;
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &statement1, nil) == SQLITE_OK) {
+        
+        while (sqlite3_step(statement1) == SQLITE_ROW) {
+            int columns = sqlite3_column_count(statement1);
+            NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithCapacity:columns];
+            
+            for (int i = 0; i<columns; i++) {
+                const char *name = sqlite3_column_name(statement1, i);
+                NSString *columnName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+                const char *value = (const char*)sqlite3_column_text(statement1, i);
+                //NSString *temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                NSString *temp = @"";
+                if (value == nil){
+                    temp = @"";
+                }else{
+                    temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                }
+                [result setValue:temp forKey:columnName];
+            } //end for
+            
+            [resultsArray addObject:result];
+            //[result release];
+            
+        } //end while
+        sqlite3_finalize(statement1);
+    }
+    
+    sqlite3_close(db);
+    
+    return resultsArray;
+}
+
+#pragma mark - Update Query Code:-
+//==================== Update Query Code ======================//
+-(BOOL)UpdateFieldSaveData:(NSString *)updateQuery{
+    [self openDB];
+    char *err;
+    
+    // NSString *updateQuery=[NSString stringWithFormat:@"UPDATE %@ SET %@ = '%@', %@ = '%@', %@ = '%@', %@ = '%@' , %@ = '%@' , %@ = '%@' , %@ = '%@' WHERE %@ = '%@';",tablename, Columname1, word1, Columname2, word2, Columname3, word3, Columname4, word4, Columname5, word5, Columname6, word6, Columname7, word7, searchCloum, searchWord];
+    //NSLog(@"updateQuery %@",updateQuery);
+    if (sqlite3_exec(db, [updateQuery UTF8String], NULL, NULL, &err) != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return NO;
+    }
+    return YES;
+}
+
+#pragma mark - Delete Query Code:-
+//======================== Delete Query code ===================//
+-(BOOL)deleteAllRecordsFromTable:(NSString*)tablename{
+    [self openDB];
+    char *err;
+    NSString *query = [NSString stringWithFormat:@"DELETE FROM %@",tablename];
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_exec(db, [query UTF8String], NULL, NULL, &err) != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Deleting Error." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    return YES;
+}
+
+-(BOOL)deleteQryRecordsFromTable:(NSString*)delQuery{
+    [self openDB];
+    char *err;
+    //NSLog(@"QUERY~~~~~~>>%@",delQuery);
+    if (sqlite3_exec(db, [delQuery UTF8String], NULL, NULL, &err) != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Deleting Error." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    return YES;
+}
+
+-(BOOL)deleteRecordFromTable:(NSString *)tableName recordID:(int)recordID{
+    [self openDB];
+    sqlite3_stmt *delStmt=nil;
+    NSString *query = [NSString stringWithFormat:@"DELETE FROM %@ WHERE Id = %d",tableName,recordID];
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &delStmt, NULL) != SQLITE_OK){
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Deleting Error." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    while(sqlite3_step(delStmt)==SQLITE_ROW){
+    }
+    sqlite3_finalize(delStmt);
+    return YES;
+}
+
+-(BOOL)delRecordFromTable:(NSString *)tableName recordName:(NSString *)recordName recordID:(int)recordID{
+    [self openDB];
+    sqlite3_stmt *delStmt=nil;
+    NSString *query = [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ = %d",tableName,recordName, recordID];
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &delStmt, NULL) != SQLITE_OK){
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Deleting Error." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    while(sqlite3_step(delStmt)==SQLITE_ROW){
+    }
+    sqlite3_finalize(delStmt);
+    return YES;
+}
+
+//======================== get Last Added Record ID Query code ===================//
+-(int)getLastAddedRecordID:(NSString *)Query{
+    [self openDB];
+    
+    sqlite3_stmt *selectstatement=nil;
+    int returnvalue;
+    
+    returnvalue = sqlite3_prepare_v2(db, [Query UTF8String], -1, &selectstatement, NULL);
+    
+    if(returnvalue==1){
+        NSAssert1(0, @"Error: failed to select from the database with message '%s'.", sqlite3_errmsg(db));
+        sqlite3_finalize(selectstatement);
+        return 0;
+    }
+    else if(returnvalue==SQLITE_OK){
+        while(sqlite3_step(selectstatement)==SQLITE_ROW){
+            returnvalue = sqlite3_column_int(selectstatement,0);
+            sqlite3_finalize(selectstatement);
+            return returnvalue;
+        }
+    }
+    
+    sqlite3_finalize(selectstatement);
+    return 0;
+}
+
+-(NSMutableDictionary *) getLableDataUsingQuery:(NSString*)query
+{
+    [self openDB];
+    
+    //  NSMutableArray *resultsArray = [NSMutableArray array];
+    
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    
+    sqlite3_stmt *statement1;
+    
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &statement1, nil) == SQLITE_OK)
+    {
+        
+        while (sqlite3_step(statement1) == SQLITE_ROW)
+        {
+            int columns = sqlite3_column_count(statement1);
+            
+            for (int i = 0; i<columns; i++)
+            {
+                const char *name = sqlite3_column_name(statement1, i);
+                NSString *columnName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+                const char *value = (const char*)sqlite3_column_text(statement1, i);
+                //NSString *temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                NSString *temp = @"";
+                if (value == nil)
+                {
+                    temp = @"";
+                }
+                else
+                {
+                    temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                }
+                
+                
+                columnName  = [columnName stringByReplacingOccurrencesOfString:@"_"
+                                                                    withString:@" "];
+                
+                columnName = [columnName stringByReplacingOccurrencesOfString:@"DDD"
+                                                                   withString:@"."];
+                
+                columnName = [columnName stringByReplacingOccurrencesOfString:@"CCC"
+                                                                   withString:@":"];
+                
+                columnName = [columnName stringByReplacingOccurrencesOfString:@"hhh"
+                                                                   withString:@"#"];
+                
+                [result setValue:temp forKey:columnName];
+            }
+            
+            // [resultsArray addObject:result];
+            
+        }
+        
+        sqlite3_finalize(statement1);
+    }
+    
+    sqlite3_close(db);
+    
+    return result;
+}
+
+
+
+-(NSMutableArray*) getAllSyncBackDataUsingQuery:(NSString*)query :(NSString *)uniqueIDConstatnt
+{
+    [self openDB];
+    
+    NSMutableArray *resultsArray = [NSMutableArray array];
+    sqlite3_stmt *statement1;
+    NSString *uniqueCode;
+    
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &statement1, nil) == SQLITE_OK)
+    {
+        
+        while (sqlite3_step(statement1) == SQLITE_ROW)
+        {
+            int columns = sqlite3_column_count(statement1);
+            NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithCapacity:columns];
+            
+            for (int i = 0; i<columns; i++)
+            {
+                const char *name = sqlite3_column_name(statement1, i);
+                NSString *columnName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+                const char *value = (const char*)sqlite3_column_text(statement1, i);
+                
+                NSString *temp = @"";
+                
+                if (value == nil)
+                {
+                    temp = @"";
+                }
+                else
+                {
+                    temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                }
+                
+                [result setValue:temp forKey:columnName];
+                
+                if(![uniqueIDConstatnt isEqualToString:@"PayInv"] && ![uniqueIDConstatnt isEqualToString:@"ProInv"])
+                {
+                    uniqueCode = [NSString stringWithFormat:@"%@%@%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"userID"],uniqueIDConstatnt,temp];
+                    [result setValue:uniqueCode forKey:@"UniqueID"];
+                }
+                else
+                {
+                    if(i==0)
+                    {
+                        uniqueCode = [NSString stringWithFormat:@"%@%@%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"userID"],uniqueIDConstatnt,temp];
+                        [result setValue:uniqueCode forKey:@"UniqueID"];
+                    }
+                    else
+                    {
+                        uniqueCode = [NSString stringWithFormat:@"%@%@%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"userID"],@"InvDet",temp];
+                        [result setValue:uniqueCode forKey:@"invoiceUniqueID"];
+                    }
+                }
+                
+                
+            } //end for
+            
+            [resultsArray addObject:result];
+        }
+        sqlite3_finalize(statement1);
+    }
+    
+    sqlite3_close(db);
+    
+    return resultsArray;
+    
+}
+
+#pragma mark - Delete Query Code:-
+//======================== Delete Query code ===================//
+-(BOOL)deleteSyncBackUpRecord:(NSString*)queryString
+{
+    [self openDB];
+    char *err;
+    //NSLog(@"QUERY~~~~~~>>%@",queryString);
+    if (sqlite3_exec(db, [queryString UTF8String], NULL, NULL, &err) != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Deleting Error." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return  NO;
+    }
+    return YES;
+}
+
+
+-(NSMutableArray*) getAllBackUPDataUsingQuery:(NSString*)query
+{
+    [self openDB];
+    
+    //NSMutableArray *resultsArray = [[NSMutableArray alloc] initWithCapacity:1];
+    NSMutableArray *resultsArray = [NSMutableArray array];
+    sqlite3_stmt *statement1;
+    //NSLog(@"QUERY~~~~~~>>%@",query);
+    if (sqlite3_prepare_v2(db, [query UTF8String], -1, &statement1, nil) == SQLITE_OK) {
+        
+        while (sqlite3_step(statement1) == SQLITE_ROW) {
+            int columns = sqlite3_column_count(statement1);
+            NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithCapacity:columns];
+            
+            for (int i = 0; i<columns; i++) {
+                const char *name = sqlite3_column_name(statement1, i);
+                NSString *columnName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+                const char *value = (const char*)sqlite3_column_text(statement1, i);
+                //NSString *temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                NSString *temp = @"";
+                if (value == nil)
+                {
+                    temp = @"";
+                }
+                else
+                {
+                    temp = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+                }
+                
+                if(!([columnName isEqualToString:@"id"] || [columnName isEqualToString:@"isSync"]))
+                {
+                    [result setValue:temp forKey:columnName];
+                }
+            } //end for
+            
+            [resultsArray addObject:result];
+            //[result release];
+            
+        } //end while
+        sqlite3_finalize(statement1);
+    }
+    
+    sqlite3_close(db);
+    
+    return resultsArray;
+    
+}
+
+@end
