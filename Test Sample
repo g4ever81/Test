@@ -1,0 +1,108 @@
+Test Sample 
+
+//===========================================================================================================
+property
+@property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) UITabBarController *tabBarController;
+
+
+implement
+self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    HomeViewController_iPhone *homeViewController_iPhone;
+    ProductsViewController *productsViewController;
+    DocumentsViewController *documentsViewController;
+    ReportsViewController *reportsViewController;
+    ContactsViewController *contactsViewController;
+    
+    HomeViewController_iPad *homeViewController_iPad;
+    ProductsViewController_iPad *productsViewController_iPad;
+    DocumentsViewController_iPad *documentsViewController_iPad;
+    ReportsViewController_iPad *reportsViewController_iPad;
+    ContactsViewController_iPad *contactsViewController_iPad;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        homeViewController_iPhone = [[HomeViewController_iPhone alloc] initWithNibName:@"HomeViewController_iPhone" bundle:nil];
+        productsViewController = [[ProductsViewController alloc] initWithNibName:@"ProductsViewController_iPhone" bundle:nil];
+        documentsViewController = [[DocumentsViewController alloc] initWithNibName:@"DocumentsViewController_iPhone" bundle:nil];
+        reportsViewController = [[ReportsViewController alloc] initWithNibName:@"ReportsViewController_iPhone" bundle:nil];
+        contactsViewController = [[ContactsViewController alloc] initWithNibName:@"ContactsViewController_iPhone" bundle:nil];
+    } else {
+        homeViewController_iPad = [[HomeViewController_iPad alloc] initWithNibName:@"HomeViewController_iPad" bundle:nil];
+        productsViewController_iPad = [[ProductsViewController_iPad alloc] initWithNibName:@"ProductsViewController_iPad" bundle:nil];
+        documentsViewController_iPad = [[DocumentsViewController_iPad alloc] initWithNibName:@"DocumentsViewController_iPad" bundle:nil];
+        reportsViewController_iPad = [[ReportsViewController_iPad alloc] initWithNibName:@"ReportsViewController_iPad" bundle:nil];
+        contactsViewController_iPad = [[ContactsViewController_iPad alloc] initWithNibName:@"ContactsViewController_iPad" bundle:nil];
+    }
+    
+    UIViewController *navigationController1;
+    UIViewController *navigationController2;
+    UIViewController *navigationController3;
+    UIViewController *navigationController4;
+    UIViewController *navigationController5;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        navigationController1 = [[UINavigationController alloc] initWithRootViewController:homeViewController_iPhone];
+        navigationController2 = [[UINavigationController alloc] initWithRootViewController:productsViewController];
+        navigationController3 = [[UINavigationController alloc] initWithRootViewController:documentsViewController];
+        navigationController4 = [[UINavigationController alloc] initWithRootViewController:reportsViewController];
+        navigationController5 = [[UINavigationController alloc] initWithRootViewController:contactsViewController];
+    }else{
+        navigationController1 = [[UINavigationController alloc] initWithRootViewController:homeViewController_iPad];
+        navigationController2 = [[UINavigationController alloc] initWithRootViewController:productsViewController_iPad];
+        navigationController3 = [[UINavigationController alloc] initWithRootViewController:documentsViewController_iPad];
+        navigationController4 = [[UINavigationController alloc] initWithRootViewController:reportsViewController_iPad];
+        navigationController5 = [[UINavigationController alloc] initWithRootViewController:contactsViewController_iPad];
+    }
+    
+    self.tabBarController = [[UITabBarController alloc] init];
+    self.tabBarController.delegate = self;
+    
+    self.tabBarController.viewControllers = @[navigationController1, navigationController2, navigationController3, navigationController4, navigationController5];
+    
+    self.tabBarController.selectedIndex = 0;
+    //tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Documents", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Home", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Home_1.png"];
+    
+    self.tabBarController.selectedIndex = 1;
+    // tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Clouds", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Products", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Products.png"];
+    
+    self.tabBarController.selectedIndex = 2;
+    //tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Search", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Documents", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Documents.png"];
+    
+    self.tabBarController.selectedIndex = 3;
+    //tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Memory", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Reports", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Reports.png"];
+    
+    self.tabBarController.selectedIndex = 4;
+    //tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Contacts", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Contacts", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Contacts.png"];
+    
+    [self.tabBarController setSelectedIndex:0];
+    
+    UIImage* tabBarBackground = [UIImage imageNamed:@"TabBar_BG.png"];
+    [[UITabBar appearance] setBackgroundImage:tabBarBackground];
+    
+    [[UITabBar appearance] setTintColor:[UIColor whiteColor]];
+    
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"Top_BG.png"] forBarMetrics:UIBarMetricsDefault];
+    
+    
+    _revealSideViewController = [[PPRevealSideViewController alloc] initWithRootViewController:self.tabBarController];
+    
+    _revealSideViewController.delegate = self;
+    
+    self.window.rootViewController = _revealSideViewController;
+
+    [self.window makeKeyAndVisible];
+    
+    return YES;
+    
+    /////=======================================================================
