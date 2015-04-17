@@ -1,0 +1,11 @@
+//SDEBImageView
+#import <UIImageView+WebCache.h>
+
+https://github.com/rs/SDWebImage
+
+[cell.imageView sd_setImageWithURL:[NSURL URLWithString:@"http://www.domain.com/path/to/image.jpg"]
+                      placeholderImage:[UIImage imageNamed:@"placeholder.png"]];
+                      
+[invitationTableViewCell.t_imageview sd_setImageWithURL:[NSURL URLWithString:
+[[appDelegate.facebook_userArr objectAtIndex:indexPath.row] valueForKey:@"profic_pic"]] 
+placeholderImage:[UIImage imageNamed:@"PlaceholderAvatar.png"]];
