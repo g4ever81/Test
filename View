@@ -1,4 +1,6 @@
 http://www.sqlabs.com/store.php
+Download DB From Site
+http://www.sqlabs.com/sqlitemanager.php
 
 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
             buyPointsViewController = [[BuyPointsViewController alloc] initWithNibName:@"BuyPointsViewController_iPhone" bundle:nil];
