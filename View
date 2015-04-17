@@ -1,3 +1,5 @@
+http://www.sqlabs.com/store.php
+
 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
             buyPointsViewController = [[BuyPointsViewController alloc] initWithNibName:@"BuyPointsViewController_iPhone" bundle:nil];
         }else{
