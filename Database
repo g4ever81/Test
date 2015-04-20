@@ -1,3 +1,13 @@
+#import <Foundation/Foundation.h>
+#import <sqlite3.h>
+@interface DatabaseManager : NSObject{
+    sqlite3 *db;
+}
+
+-(NSString *)filePath;
+-(void)openDB;
+
+==================
 #import "DatabaseManager.h"
 
 @implementation DatabaseManager
