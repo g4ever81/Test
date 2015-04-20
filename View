@@ -1,7 +1,7 @@
 http://www.sqlabs.com/store.php
 Download DB From Site
 http://www.sqlabs.com/sqlitemanager.php
-
+====================================================================================
 if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
             buyPointsViewController = [[BuyPointsViewController alloc] initWithNibName:@"BuyPointsViewController_iPhone" bundle:nil];
         }else{
@@ -20,3 +20,49 @@ if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
         [self presentViewController:n animated:YES completion:nil];
     }
 }
+
+
+===============================================================================
+ self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
+        self.historyViewController = [[HistoryViewController alloc] initWithNibName:@"HistoryViewController_iPhone" bundle:nil];
+    } else {
+        self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
+        self.historyViewController = [[HistoryViewController alloc] initWithNibName:@"HistoryViewController_iPad" bundle:nil];
+    }
+    
+    UIViewController *navigationController1;
+    UIViewController *navigationController2;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        navigationController1 = [[UINavigationController alloc] initWithRootViewController:self.viewController];
+        navigationController2 = [[UINavigationController alloc] initWithRootViewController:self.historyViewController];
+    }else{
+        navigationController1 = [[UINavigationController alloc] initWithRootViewController:self.viewController];
+        navigationController2 = [[UINavigationController alloc] initWithRootViewController:self.historyViewController];
+    }
+    
+    self.tabBarController = [[UITabBarController alloc] init];
+    self.tabBarController.delegate = self;
+    
+    self.tabBarController.viewControllers = @[navigationController1, navigationController2];
+    
+    self.tabBarController.selectedIndex = 0;
+    self.tabBarController.selectedViewController.tabBarItem.title = @"Home";//NSLocalizedStringFromTableInBundle(@"Home", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    self.tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Home_1.png"];
+    
+    self.tabBarController.selectedIndex = 1;
+    // tabBarController.selectedViewController.tabBarItem.title = NSLocalizedStringFromTableInBundle(@"Clouds", @"Localizable", [USBAppAppDelegate GetLocalizebundle], @"");
+    self.tabBarController.selectedViewController.tabBarItem.title = @"History";//NSLocalizedStringFromTableInBundle(@"Products", @"Localizable", [AppDelegate GetLocalizebundle], @"");
+    self.tabBarController.selectedViewController.tabBarItem.image = [UIImage imageNamed:@"Products.png"];
+    
+    
+    [self.tabBarController setSelectedIndex:1];
+    
+    self.window.rootViewController = self.tabBarController;
+    
+    [self.window makeKeyAndVisible];
+    
+    return YES;
