@@ -1,3 +1,16 @@
+//Database====================================================================================================
+    NSString *storePath = [self filePath:@"HeartRateApp.sqlite"];
+    NSLog(@"storePath_Database %@",storePath);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (![fileManager fileExistsAtPath:storePath]){
+        NSString *defaultStorePath = [[NSBundle mainBundle] pathForResource:@"HeartRateApp" ofType:@"sqlite"];
+        if (defaultStorePath){
+            [fileManager copyItemAtPath:defaultStorePath toPath:storePath error:NULL];
+        }
+    }
+//====================================================================================================
+
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
 @interface DatabaseManager : NSObject{
