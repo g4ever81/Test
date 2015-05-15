@@ -1,0 +1,98 @@
+-(void)postMethod:(NSString *)HttpURL PostData:(NSString *)PostStr{
+    NSLog(@"POST URL:%@", HttpURL);
+
+    //initialize url that is going to be fetched.
+    NSURL *url = [NSURL URLWithString:HttpURL];
+    
+    //initialize a request from url
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[url standardizedURL]];
+    
+    //set http method
+    [request setHTTPMethod:@"POST"];
+
+    //initialize a post data
+    NSString *postData = PostStr;
+
+    //Here you can give your parameters value
+    
+    //set request content type we MUST set this value.
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    //[request setValue:@"application/x-www-form-urlencoded; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    
+    //set post data of request
+    [request setHTTPBody:[postData dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    //initialize a connection from request
+    NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    self.connection = conn;
+    if (self.connection) {
+        receivedData = [NSMutableData data];
+    }
+    //start the connection
+    //[connection start];	
+}
+
+
+- (void)connection:(NSURLConnection *) connection didReceiveResponse:(NSURLResponse *)response{
+    //NSLog(@"Response recieved");
+    [receivedData setLength:0];
+}
+
+- (void)connection:(NSURLConnection*) connection didReceiveData:(NSData *)data{
+	NSLog(@"Data recieved");
+        [receivedData appendData:data];
+}
+
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    // Connection succeeded in downloading the request.
+    NSLog( @"Succeeded! Received %d bytes of data", [receivedData length] );
+    
+    // Convert received data into string.
+    
+    NSString *responseString = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
+    connection= nil;
+    [receivedData setLength:0];
+    receivedData = nil;
+    NSLog(@"responseString:%@",responseString);
+    [self.delegate performSelector:@selector(processCompleted:) withObject:responseString];
+}
+
+
+
+// Get Method
+-(void)GetImages_FromServer{
+    //[httpsReachability retrieveResponseAsync:@"https://unicefapi.xtremeproductivity.net/user/getsystemsetting/58622839-e388-4a02-a9a6-135aa08d8db8/91F5918B-4869-E311-80CC-00155D6318C6" withHTTPType:@"GET"];
+
+    NSString *url_str = [NSString stringWithFormat:@"%@/user/getsystemsetting/%@/91F5918B-4869-E311-80CC-00155D6318C6",[appDelegate getTokenStrFromEnumMode:@"CommonDomainName"], [appDelegate getTokenStrFromEnumMode:@"CommonToken"]];
+
+    [httpsReachability retrieveResponseAsync:url_str withHTTPType:@"GET"];
+}
+
+-(void)retrieveResponseAsync:(NSString *)URL withHTTPType:(NSString *)HTTPType{
+        
+        NSLog(@"URL %@",URL);
+        
+        NSURL *requestUrl = [[NSURL alloc] initWithString:URL];
+        NSMutableURLRequest *request = [NSURLRequest requestWithURL:requestUrl cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60.0];
+        
+        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        self.connection = conn;
+        if (self.connection) {
+            receivedData = [NSMutableData data];
+        }
+        [self.connection start];
+    }
+}
+
+
+
+//Json Pass
+#pragma mark - JSON Responce lifecycle
+-(void)processCompleted:(NSString *)response{
+        NSLog(@"response~~`>>%@",response);
+        NSDictionary *dic = [NSDictionary dictionary];
+        dic = [response JSONValue];
+        NSLog(@"%@",dic);
+}
