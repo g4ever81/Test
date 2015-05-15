@@ -66,3 +66,10 @@ if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
     [self.window makeKeyAndVisible];
     
     return YES;
+======================================================================================================================
+
+NSString *Save = [NSString stringWithFormat:@"INSERT INTO 'ContactDetails'('company') VALUES ('%@')",[contactsDetails_Dic valueForKey:@"company"]];
+
+NSString *qry = [NSString stringWithFormat:@"UPDATE Company_Settings SET imagepath = '%@', company = '%@' WHERE rowid = '1'",[CompanySettingDB_Dic valueForKey:@"imagepath"], ,[CompanySettingDB_Dic valueForKey:@"company"]];
+
+============================================================================================================================================ 
