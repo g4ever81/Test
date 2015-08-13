@@ -1,0 +1,15 @@
+NSString *imageUrl = @"http://www.foo.com/myImage.jpg";
+[NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+    myImageView.image = [UIImage imageWithData:data];
+}];
+
+
+==================================================================
+
+https://github.com/rs/SDWebImage
+
+#import "UIImageView+WebCache.h"
+
+
+[imageView setImageWithURL:[NSURL URLWithString:@"http://www.domain.com/path/to/image.jpg"]
+                       placeholderImage:[UIImage imageNamed:@"placeholder.png"]];
