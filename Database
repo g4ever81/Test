@@ -1,3 +1,8 @@
+Add Frame work
+UIKit
+Foundation
+sqlite3
+
 //Database====================================================================================================
     NSString *storePath = [self filePath:@"HeartRateApp.sqlite"];
     NSLog(@"storePath_Database %@",storePath);
@@ -9,10 +14,18 @@
             [fileManager copyItemAtPath:defaultStorePath toPath:storePath error:NULL];
         }
     }
+    
+    -(NSString *)filePath:(NSString *)DBName{
+         NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+         NSString *directory = [path objectAtIndex:0];
+         return [directory stringByAppendingPathComponent:DBName];
+    }
 //====================================================================================================
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
+
 @interface DatabaseManager : NSObject{
     sqlite3 *db;
 }
