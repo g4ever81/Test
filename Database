@@ -4,12 +4,12 @@ Foundation
 sqlite3
 
 //Database AppDelegate====================================================================================================
-    NSString *storePath = [self filePath:@"HeartRateApp.sqlite"];
+    NSString *storePath = [self filePath:@"TEST.sqlite"];
     NSLog(@"storePath_Database %@",storePath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     if (![fileManager fileExistsAtPath:storePath]){
-        NSString *defaultStorePath = [[NSBundle mainBundle] pathForResource:@"HeartRateApp" ofType:@"sqlite"];
+        NSString *defaultStorePath = [[NSBundle mainBundle] pathForResource:@"TEST" ofType:@"sqlite"];
         if (defaultStorePath){
             [fileManager copyItemAtPath:defaultStorePath toPath:storePath error:NULL];
         }
@@ -44,7 +44,7 @@ sqlite3
 -(NSString *)filePath{
     NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *directory = [path objectAtIndex:0];
-    return [directory stringByAppendingPathComponent:@"InvoiceApp.sqlite"];
+    return [directory stringByAppendingPathComponent:@"TEST.sqlite"];
 }
 
 -(void)openDB{
