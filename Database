@@ -3,7 +3,7 @@ UIKit
 Foundation
 sqlite3
 
-//Database====================================================================================================
+//Database AppDelegate====================================================================================================
     NSString *storePath = [self filePath:@"HeartRateApp.sqlite"];
     NSLog(@"storePath_Database %@",storePath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -22,6 +22,8 @@ sqlite3
     }
 //====================================================================================================
 
+
+//NSObject====================================================================================================
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
