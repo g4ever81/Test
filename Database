@@ -61,6 +61,7 @@ sqlite3
 -(BOOL)insertValueIntoTable:(NSString*)query err:(NSString*)error{
     [self openDB];
     char *err;
+    //NSString *insertStr = [NSString stringWithFormat:@"INSERT INTO TEST ('name','surname') VALUES ('%@', '%@')", @"ABC", @"DEF"];
     //NSLog(@"QUERY~~~~~~>>%@",query);
     if (sqlite3_exec(db, [query UTF8String], NULL, NULL, &err) != SQLITE_OK){
         sqlite3_close(db);
